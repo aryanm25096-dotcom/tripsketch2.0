@@ -88,7 +88,7 @@ export default function Dashboard() {
     await fetchSpots(destination, vibe, crowd);
   };
 
-  // ✅ Fix 2: Surprise Me now auto-triggers the search
+  
   const handleSurpriseMe = async () => {
     const surprises = [
       'Gokarna, Karnataka',
@@ -226,7 +226,7 @@ export default function Dashboard() {
           <p>{filteredSpots.length} spots found</p>
         </div>
         <div className="feed-controls">
-          {/* ✅ Fix 3: Mini search now works */}
+
           <div className="mini-search">
             <Search size={16} color="var(--color-text-muted)" />
             <input
@@ -237,7 +237,7 @@ export default function Dashboard() {
             />
           </div>
 
-          {/* ✅ Fix 4: Sort dropdown now works */}
+
           <select
             className="sort-dropdown"
             value={sortOrder}
