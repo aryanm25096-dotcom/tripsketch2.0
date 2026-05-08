@@ -8,25 +8,22 @@ export const generateSpots = async (destination, vibe, crowd) => {
         {
           role: 'system',
           content: `You are an expert local travel planner. Generate 6 REAL, authentic travel spots in or near the destination.
-Return ONLY valid JSON (no markdown, no commentary) in this exact structure:
-{
-  "spots": [
-    {
-      "id": "unique-id",
-      "name": "Real Spot Name",
-      "location": "Specific area, City",
-      "vibe": "chill|adventure|food|nature|culture",
-      "budget": number,
-      "crowdLevel": "low|medium|high",
-      "tags": ["tag1", "tag2"],
-      "rating": number,
-      "popularity": number,
-      "description": "Two-sentence description of the spot.",
-      "wikiTitle": "Exact Wikipedia page name (e.g. 'Om Beach' or 'Hadimba Devi Temple')",
-      "searchTerms": ["Spot Name City", "Landmark Area"]
-    }
-  ]
-}`,
+Return ONLY valid JSON. START your response with '[' and END with ']'. 
+NO markdown, NO code blocks, NO commentary, NO 'Here is your JSON'.
+Follow this exact array structure:
+[
+  {
+    "id": 1,
+    "name": "Spot Name",
+    "location": "Area, City",
+    "description": "Short 1-sentence vibe",
+    "vibe": "Nature|Culture|Food|Adventure",
+    "rating": 4.8,
+    "tags": ["tag1", "tag2"],
+    "wikiTitle": "Exact Wikipedia page name",
+    "searchTerms": ["Spot Name City"]
+  }
+]`,
         },
         {
           role: 'user',
@@ -39,9 +36,21 @@ Example — Om Beach in Gokarna: wikiTitle: "Om Beach", searchTerms: ["Om Beach 
       true
     );
 
-    const parsed = JSON.parse(cleanJson(content));
+    const cleaned = cleanJson(content);
+    let parsed;
+    try {
+      parsed = JSON.parse(cleaned);
+    } catch (err) {
+      console.error('[spots] JSON Parse Error. Raw content was:', content);
+      console.error('[spots] Cleaned content was:', cleaned);
+      return [];
+    }
+
     const spots = Array.isArray(parsed) ? parsed : parsed?.spots;
-    if (!Array.isArray(spots)) return [];
+    if (!Array.isArray(spots)) {
+      console.warn('[spots] Result is not an array:', parsed);
+      return [];
+    }
 
     
     const spotsWithImages = await Promise.all(

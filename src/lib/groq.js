@@ -34,7 +34,7 @@ export const callGroq = async (messages, isJson = false) => {
   const body = {
     model: 'llama-3.1-8b-instant',
     messages,
-    max_tokens: 1500, // Prevent truncated responses
+    max_tokens: 3000, // Increased to prevent truncated JSON
   };
 
   if (isJson) {
