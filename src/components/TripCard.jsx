@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Heart, MapPin, Sparkles, Send } from 'lucide-react';
-import { askAboutPlace } from '../lib/gemini';
+import { askAboutPlace } from '../lib/askPlace';
 
 // ✅ Fix 4: Track recently viewed in localStorage
 const trackRecentlyViewed = (spot) => {

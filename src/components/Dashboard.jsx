@@ -5,7 +5,8 @@ import {
   Sparkles, Search, Grid, Map, 
   CloudSun
 } from 'lucide-react';
-import { getWeatherAndInfo, generateSpots } from '../lib/gemini';
+import { getWeatherAndInfo } from '../lib/weather';
+import { generateSpots } from '../lib/spots';
 
 export default function Dashboard() {
   const [theme, setTheme] = useState('light');
