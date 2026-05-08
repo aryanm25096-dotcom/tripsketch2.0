@@ -1,4 +1,4 @@
-import { callGroq, cleanJson } from './groq';
+import { callGroq, cleanJson } from './groq.js';
 export const analyzeSearchQuery = async (query) => {
   try {
     const content = await callGroq(

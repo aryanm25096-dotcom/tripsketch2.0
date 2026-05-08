@@ -1,4 +1,4 @@
-import { callGroq } from './groq';
+import { callGroq } from './groq.js';
 export const askAboutPlace = async (placeName, question) => {
   try {
     const content = await callGroq([

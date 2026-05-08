@@ -1218,3 +1218,162 @@ h1, h2, h3, h4, h5, h6 {
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
+
+/* Itinerary Modal & Buttons */
+.btn-itinerary {
+  background: linear-gradient(135deg, var(--color-accent), #ff5e62);
+  color: #fff;
+  border: none;
+  padding: 0.5rem 1.2rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(255, 138, 76, 0.3);
+}
+
+.btn-itinerary:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255, 138, 76, 0.5);
+}
+
+.btn-itinerary:disabled {
+  opacity: 0.7;
+  cursor: wait;
+}
+
+.itinerary-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  animation: fadeIn 0.3s ease;
+}
+
+.itinerary-modal {
+  background: var(--card-bg);
+  width: 100%;
+  max-width: 900px;
+  max-height: 85vh;
+  border-radius: 24px;
+  border: 1px solid var(--card-border);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 30px 60px rgba(0,0,0,0.4);
+  animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.itinerary-header {
+  padding: 1.5rem 2rem;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.itinerary-header h3 {
+  font-family: var(--font-serif);
+  font-size: 1.8rem;
+  margin: 0;
+}
+
+.itinerary-header h3 span {
+  color: var(--color-sunset);
+  font-style: italic;
+}
+
+.close-modal {
+  background: transparent;
+  border: none;
+  font-size: 2rem;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  line-height: 1;
+}
+
+.itinerary-body {
+  padding: 2.5rem;
+  overflow-y: auto;
+  flex: 1;
+  font-family: var(--font-body);
+  line-height: 1.7;
+  color: var(--color-text);
+}
+
+/* Markdown Styling */
+.itinerary-body h1, .itinerary-body h2, .itinerary-body h3 {
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  color: var(--color-sunset);
+}
+
+.itinerary-body p {
+  margin-bottom: 1rem;
+}
+
+.itinerary-body ul, .itinerary-body ol {
+  margin-bottom: 1.5rem;
+  padding-left: 1.5rem;
+}
+
+.itinerary-body li {
+  margin-bottom: 0.5rem;
+}
+
+.itinerary-loader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 0;
+  gap: 2rem;
+}
+
+.itinerary-footer {
+  padding: 1.5rem 2rem;
+  border-top: 1px solid var(--border-color);
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  background: var(--color-surface);
+}
+
+.btn-print {
+  background: transparent;
+  border: 1px solid var(--border-color);
+  color: var(--color-text);
+  padding: 0.8rem 1.5rem;
+  border-radius: 12px;
+  cursor: pointer;
+}
+
+.btn-close-full {
+  background: var(--color-text);
+  color: var(--color-bg);
+  border: none;
+  padding: 0.8rem 2rem;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(30px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}

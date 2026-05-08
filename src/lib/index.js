@@ -12,20 +12,20 @@
  */
 
 // Shared utilities
-export { callGroq, cleanJson } from './groq';
-export { getWikipediaImage } from './wikipedia';
+export { callGroq, cleanJson } from './groq.js';
+export { getWikipediaImage } from './wikipedia.js';
 
 // Feature 1 — AI Trip Planner
-export { generateTripItinerary } from './itinerary';
+export { generateTripItinerary } from './itinerary.js';
 
 // Feature 2 — Natural Language Search
-export { analyzeSearchQuery } from './search';
+export { analyzeSearchQuery } from './search.js';
 
 // Feature 3 — Ask About a Place
-export { askAboutPlace } from './askPlace';
+export { askAboutPlace } from './askPlace.js';
 
 // Feature 4 — Weather & Vibe
-export { getWeatherAndInfo } from './weather';
+export { getWeatherAndInfo } from './weather.js';
 
 // Feature 5 — Spot Discovery
-export { generateSpots } from './spots';
+export { generateSpots } from './spots.js';

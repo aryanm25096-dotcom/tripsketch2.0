@@ -95,9 +95,6 @@ export default function TripCard({ spot }) {
         )}
 
         <div className="card-footer">
-          <div className="price">
-            <span className="amount">₹{spot.budget}</span> / day
-          </div>
           <button
             className="ask-btn"
             onClick={handleAskToggle}

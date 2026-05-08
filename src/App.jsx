@@ -55,11 +55,20 @@ function App() {
         });
       });
       
-      await Promise.all(promises);
+      // Speed up initial load: Only wait for first 10 frames to show the page
+      const initialBatch = promises.slice(0, 10);
+      await Promise.all(initialBatch);
       
       if (isMounted) {
-        setImages(loadedImages.filter(Boolean));
+        setImages([...loadedImages.filter(Boolean)]);
         setLoaded(true);
+        
+        // Load the remaining frames in the background
+        Promise.all(promises.slice(10)).then(() => {
+          if (isMounted) {
+            setImages([...loadedImages.filter(Boolean)]);
+          }
+        });
       }
     };
 
@@ -120,17 +129,18 @@ function App() {
     const handleScroll = () => {
       if (!containerRef.current) return;
       
-      const containerTop = containerRef.current.offsetTop;
+      const rect = containerRef.current.getBoundingClientRect();
       const containerHeight = containerRef.current.scrollHeight - window.innerHeight;
       
-      let scrollY = window.scrollY - containerTop;
+      // Calculate progress based on how far we've scrolled into the container
+      let scrollY = -rect.top;
       scrollY = Math.max(0, Math.min(scrollY, containerHeight));
       
       const scrollFraction = scrollY / containerHeight;
-      targetFrame = Math.min(
+      targetFrame = Math.max(0, Math.min(
         images.length - 1,
         Math.floor(scrollFraction * images.length)
-      );
+      ));
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });

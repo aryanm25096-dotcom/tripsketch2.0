@@ -1,4 +1,4 @@
-import { callGroq } from './groq';
+import { callGroq } from './groq.js';
 export const generateTripItinerary = async (prompt) => {
   try {
     const content = await callGroq([

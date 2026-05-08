@@ -5,7 +5,8 @@
  * Every feature module imports from here — do not add feature-specific logic here.
  */
 
-const GROQ_API_KEY = import.meta.env.VITE_GROQ_API_KEY || '';
+const GROQ_API_KEY = (typeof import.meta !== 'undefined' && import.meta.env?.VITE_GROQ_API_KEY) || 
+                       (typeof process !== 'undefined' && process.env?.VITE_GROQ_API_KEY) || '';
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
@@ -25,8 +26,9 @@ const parseRetryAfterMs = (message) => {
  */
 export const callGroq = async (messages, isJson = false) => {
   if (!GROQ_API_KEY) {
-    console.warn('Groq API key is missing. Add VITE_GROQ_API_KEY to your .env file.');
-    throw new Error('Missing VITE_GROQ_API_KEY');
+    const msg = 'GROQ API Key is missing. Please add VITE_GROQ_API_KEY to your .env file.';
+    console.error(msg);
+    throw new Error(msg);
   }
 
   const body = {
@@ -91,8 +93,10 @@ export const callGroq = async (messages, isJson = false) => {
  */
 export const cleanJson = (str) => {
   try {
+    // 1. Remove markdown code blocks
     let cleaned = str.replace(/```json|```/g, '').trim();
 
+    // 2. Find the first occurrence of { or [ and the last occurrence of } or ]
     const startIdx = cleaned.search(/[[]{]/);
     if (startIdx === -1) return cleaned;
 
@@ -103,7 +107,26 @@ export const cleanJson = (str) => {
     if (endIdx === -1) return cleaned;
 
     cleaned = cleaned.substring(startIdx, endIdx + 1);
-    cleaned = cleaned.replace(/,\s*([\]}])/g, '$1'); // Remove trailing commas
+
+    // 3. Remove trailing commas in objects and arrays
+    cleaned = cleaned.replace(/,\s*([\]}])/g, '$1');
+    
+    // 4. Handle escaped newlines that sometimes break JSON.parse
+    // We only want to escape raw newlines that aren't already escaped
+    // This is tricky, but common in LLM outputs
+    const safelyParsed = (s) => {
+      try {
+        return JSON.parse(s);
+      } catch (e) {
+        return null;
+      }
+    };
+
+    if (safelyParsed(cleaned)) return cleaned;
+
+    // Try a more aggressive fix for unescaped newlines
+    let aggressive = cleaned.replace(/\n/g, '\\n');
+    if (safelyParsed(aggressive)) return aggressive;
 
     return cleaned;
   } catch (e) {

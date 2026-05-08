@@ -5,8 +5,10 @@ import {
   Sparkles, Search, Grid, Map, 
   CloudSun
 } from 'lucide-react';
-import { getWeatherAndInfo } from '../lib/weather';
-import { generateSpots } from '../lib/spots';
+import { getWeatherAndInfo } from '../lib/weather.js';
+import { generateSpots } from '../lib/spots.js';
+import { generateTripItinerary } from '../lib/itinerary.js';
+import ReactMarkdown from 'react-markdown';
 
 export default function Dashboard() {
   const [theme, setTheme] = useState('light');
@@ -19,6 +21,10 @@ export default function Dashboard() {
   const [viewMode, setViewMode] = useState('grid');
   const [searchQuery, setSearchQuery] = useState('');
   const [sortOrder, setSortOrder] = useState('default');
+  const [error, setError] = useState(null);
+  const [itinerary, setItinerary] = useState(null);
+  const [isGeneratingItinerary, setIsGeneratingItinerary] = useState(false);
+  const [showItinerary, setShowItinerary] = useState(false);
   const [recentlyViewed] = useState(() => {
     try {
       const raw = localStorage.getItem('recently_viewed');
@@ -68,20 +74,40 @@ export default function Dashboard() {
   const fetchSpots = async (dest, v, c) => {
     setIsSearching(true);
     setWeatherInfo(null);
-
-    const newSpots = await generateSpots(dest, v, c);
-    setSpots(newSpots);
+    setError(null);
 
     try {
+      const newSpots = await generateSpots(dest, v, c);
+      if (newSpots && newSpots.length > 0) {
+        setSpots(newSpots);
+      } else {
+        setError("We couldn't find any spots for that vibe. Try another destination!");
+      }
+
       const weather = await getWeatherAndInfo(dest);
       if (weather) setWeatherInfo(weather);
     } catch (e) {
       console.error(e);
+      setError(e.message || "Something went wrong. Check your connection!");
+    } finally {
+      setIsSearching(false);
     }
-
-    setIsSearching(false);
   };
 
+  const handleGenerateItinerary = async () => {
+    if (!destination.trim()) return;
+    setIsGeneratingItinerary(true);
+    setShowItinerary(true);
+    try {
+      const result = await generateTripItinerary(`A ${vibe !== 'All' ? vibe : ''} trip to ${destination} with ${crowd !== 'Any' ? crowd : 'moderate'} crowd preference.`);
+      setItinerary(result);
+    } catch (e) {
+      console.error(e);
+      setItinerary("Failed to generate itinerary. Please try again.");
+    } finally {
+      setIsGeneratingItinerary(false);
+    }
+  };
   const handleExplore = async (e) => {
     e.preventDefault();
     if (!destination.trim()) return;
@@ -223,7 +249,18 @@ export default function Dashboard() {
       <div className="feed-header">
         <div className="feed-title">
           <h2>Places in <span>{destination || 'Explore'}</span></h2>
-          <p>{filteredSpots.length} spots found</p>
+          <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', marginTop: '0.5rem' }}>
+            <p>{filteredSpots.length} spots found</p>
+            {destination && (
+              <button 
+                className="btn-itinerary" 
+                onClick={handleGenerateItinerary}
+                disabled={isGeneratingItinerary}
+              >
+                <Sparkles size={14} /> {isGeneratingItinerary ? 'Writing Plan...' : 'Create Full Itinerary'}
+              </button>
+            )}
+          </div>
         </div>
         <div className="feed-controls">
 
@@ -244,8 +281,6 @@ export default function Dashboard() {
             onChange={(e) => setSortOrder(e.target.value)}
           >
             <option value="default">Sort: Default</option>
-            <option value="price-asc">Price: Low to High</option>
-            <option value="price-desc">Price: High to Low</option>
             <option value="rating-desc">Rating: High to Low</option>
           </select>
 
@@ -286,12 +321,48 @@ export default function Dashboard() {
         )
       ) : (
         <div className="empty-state">
-          <Sparkles size={48} color="var(--color-accent)" style={{ opacity: 0.5, marginBottom: '1rem' }} />
-          <h3>No hidden gems found here yet.</h3>
-          <p>Try searching for a destination like Gokarna, Spiti, or Meghalaya!</p>
-          <button className="btn-surprise" onClick={handleSurpriseMe} style={{ marginTop: '1.5rem', margin: '1.5rem auto 0' }}>
-            Try Surprise Me!
-          </button>
+          {error ? (
+            <div className="error-message" style={{ color: 'var(--color-sunset)', textAlign: 'center' }}>
+              <p>{error}</p>
+              <button className="btn-surprise" onClick={() => setError(null)} style={{ marginTop: '1rem', borderStyle: 'solid' }}>
+                Dismiss
+              </button>
+            </div>
+          ) : (
+            <>
+              <Sparkles size={48} color="var(--color-accent)" style={{ opacity: 0.5, marginBottom: '1rem' }} />
+              <h3>No hidden gems found here yet.</h3>
+              <p>Try searching for a destination like Gokarna, Spiti, or Meghalaya!</p>
+              <button className="btn-surprise" onClick={handleSurpriseMe} style={{ marginTop: '1.5rem', margin: '1.5rem auto 0' }}>
+                Try Surprise Me!
+              </button>
+            </>
+          )}
+        </div>
+      )}
+      {/* Itinerary Modal */}
+      {showItinerary && (
+        <div className="itinerary-overlay" onClick={() => setShowItinerary(false)}>
+          <div className="itinerary-modal" onClick={e => e.stopPropagation()}>
+            <div className="itinerary-header">
+              <h3>Your <span>{destination}</span> Plan</h3>
+              <button className="close-modal" onClick={() => setShowItinerary(false)}>×</button>
+            </div>
+            <div className="itinerary-body">
+              {isGeneratingItinerary ? (
+                <div className="itinerary-loader">
+                  <div className="spinner"></div>
+                  <p>Sketching your perfect journey...</p>
+                </div>
+              ) : (
+                <ReactMarkdown>{itinerary}</ReactMarkdown>
+              )}
+            </div>
+            <div className="itinerary-footer">
+              <button className="btn-print" onClick={() => window.print()}>Download PDF</button>
+              <button className="btn-close-full" onClick={() => setShowItinerary(false)}>Done</button>
+            </div>
+          </div>
         </div>
       )}
     </div>

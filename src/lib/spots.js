@@ -1,5 +1,5 @@
-import { callGroq, cleanJson } from './groq';
-import { getWikipediaImage } from './wikipedia';
+import { callGroq, cleanJson } from './groq.js';
+import { getWikipediaImage } from './wikipedia.js';
 
 export const generateSpots = async (destination, vibe, crowd) => {
   try {
