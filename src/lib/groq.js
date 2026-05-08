@@ -7,6 +7,17 @@
 
 const GROQ_API_KEY = import.meta.env.VITE_GROQ_API_KEY || '';
 
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+const parseRetryAfterMs = (message) => {
+  // Example: "Please try again in 13.27s."
+  const match = String(message).match(/try again in\s+(\d+(?:\.\d+)?)s/i);
+  if (!match) return null;
+  const seconds = Number(match[1]);
+  if (!Number.isFinite(seconds)) return null;
+  return Math.max(250, Math.ceil(seconds * 1000));
+};
+
 /**
  * callGroq — sends a message array to the Groq LLM and returns the raw text response.
  * @param {Array} messages  - OpenAI-format message array [{role, content}]
@@ -28,17 +39,33 @@ export const callGroq = async (messages, isJson = false) => {
     body.response_format = { type: 'json_object' };
   }
 
-  const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${GROQ_API_KEY}`,
-    },
-    body: JSON.stringify(body),
-  });
+  const doFetch = async () =>
+    fetch('https://api.groq.com/openai/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${GROQ_API_KEY}`,
+      },
+      body: JSON.stringify(body),
+    });
+
+  let response = await doFetch();
+
+  // One automatic retry on rate limits
+  if (!response.ok && response.status === 429) {
+    let retryMs = 1500;
+    try {
+      const err = await response.json();
+      retryMs = parseRetryAfterMs(err?.error?.message) ?? retryMs;
+    } catch {
+      // ignore
+    }
+    await sleep(retryMs);
+    response = await doFetch();
+  }
 
   if (!response.ok) {
-    const err = await response.json();
+    const err = await response.json().catch(() => null);
     throw new Error(err?.error?.message || `Groq API error: ${response.status}`);
   }
 
@@ -48,7 +75,7 @@ export const callGroq = async (messages, isJson = false) => {
   if (isJson) {
     try {
       JSON.parse(cleanJson(content)); // Validate silently
-    } catch (e) {
+    } catch {
       console.error('Groq returned invalid JSON:', content);
     }
   }
@@ -66,7 +93,7 @@ export const cleanJson = (str) => {
   try {
     let cleaned = str.replace(/```json|```/g, '').trim();
 
-    const startIdx = cleaned.search(/[\[{]/);
+    const startIdx = cleaned.search(/[[]{]/);
     if (startIdx === -1) return cleaned;
 
     const char = cleaned[startIdx];

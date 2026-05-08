@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import TripCard from './TripCard';
 import { 
   Heart, Menu, Sun, Moon, MapPin, 
@@ -11,7 +11,6 @@ import { generateSpots } from '../lib/spots';
 export default function Dashboard() {
   const [theme, setTheme] = useState('light');
   const [spots, setSpots] = useState([]);
-  const [filteredSpots, setFilteredSpots] = useState([]);
   const [destination, setDestination] = useState('');
   const [vibe, setVibe] = useState('All');
   const [crowd, setCrowd] = useState('Any');
@@ -20,27 +19,31 @@ export default function Dashboard() {
   const [viewMode, setViewMode] = useState('grid');
   const [searchQuery, setSearchQuery] = useState('');
   const [sortOrder, setSortOrder] = useState('default');
-  const [recentlyViewed, setRecentlyViewed] = useState([]);
+  const [recentlyViewed] = useState(() => {
+    try {
+      const raw = localStorage.getItem('recently_viewed');
+      return raw ? JSON.parse(raw) : [];
+    } catch {
+      return [];
+    }
+  });
 
   const vibes = ['All', 'Nature', 'Culture', 'Food', 'Adventure'];
   const crowds = ['Any', 'Quiet', 'Moderate', 'Lively'];
 
-  // ✅ Fix 1: Apply search + sort whenever spots, searchQuery, or sortOrder changes
-  useEffect(() => {
+  const filteredSpots = useMemo(() => {
     let result = [...spots];
 
-    // Mini search filter
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
       result = result.filter(
-        s =>
-          s.name.toLowerCase().includes(q) ||
-          s.location.toLowerCase().includes(q) ||
-          s.description.toLowerCase().includes(q)
+        (s) =>
+          String(s.name || '').toLowerCase().includes(q) ||
+          String(s.location || '').toLowerCase().includes(q) ||
+          String(s.description || '').toLowerCase().includes(q)
       );
     }
 
-    // Sort
     if (sortOrder === 'price-asc') {
       result.sort((a, b) => a.budget - b.budget);
     } else if (sortOrder === 'price-desc') {
@@ -49,20 +52,8 @@ export default function Dashboard() {
       result.sort((a, b) => b.rating - a.rating);
     }
 
-    setFilteredSpots(result);
+    return result;
   }, [spots, searchQuery, sortOrder]);
-
-  // Load recently viewed on mount and when spots change (in case they interact)
-  useEffect(() => {
-    try {
-      const raw = localStorage.getItem('recently_viewed');
-      if (raw) {
-        setRecentlyViewed(JSON.parse(raw));
-      }
-    } catch (e) {
-      console.error(e);
-    }
-  }, [spots]);
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Heart, MapPin, Sparkles, Send } from 'lucide-react';
 import { askAboutPlace } from '../lib/askPlace';
 
