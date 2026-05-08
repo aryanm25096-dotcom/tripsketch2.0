@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Heart, MapPin, Sparkles, Send } from 'lucide-react';
 import { askAboutPlace } from '../lib/askPlace';
 
-// ✅ Fix 4: Track recently viewed in localStorage
+
 const trackRecentlyViewed = (spot) => {
   try {
     const raw = localStorage.getItem('recently_viewed');
@@ -25,7 +25,7 @@ export default function TripCard({ spot }) {
   const [aiResponse, setAiResponse] = useState('');
   const [loading, setLoading] = useState(false);
 
-  // ✅ Fix 1: Fallback image if Unsplash fails
+  
   const [imgSrc, setImgSrc] = useState(spot.image);
   const handleImageError = () => {
     // Beautiful scenic fallback if Wikipedia/LoremFlickr fails
@@ -43,21 +43,21 @@ export default function TripCard({ spot }) {
     if (!question.trim()) return;
 
     setLoading(true);
-    setAiResponse(''); // ✅ Fix 3: Clear old response before new one loads
+    setAiResponse(''); 
     const response = await askAboutPlace(spot.name, question);
     setAiResponse(response);
     setLoading(false);
     setQuestion('');
   };
 
-  // ✅ Fix 4: Track when user opens the card details
+  
   const handleAskToggle = () => {
     if (!askMode) trackRecentlyViewed(spot);
     setAskMode(!askMode);
     setAiResponse('');
   };
 
-  // ✅ Fix 2: Safe tags — fallback to empty array if undefined
+  
   const tags = Array.isArray(spot.tags) ? spot.tags : [];
 
   return (
@@ -85,7 +85,7 @@ export default function TripCard({ spot }) {
 
         <p className="description">{spot.description}</p>
 
-        {/* ✅ Fix 2: Safe .map() with fallback */}
+        
         {tags.length > 0 && (
           <div className="tags">
             {tags.map(tag => (
@@ -110,7 +110,7 @@ export default function TripCard({ spot }) {
         {/* Ask Gemini Section */}
         {askMode && (
           <div className="ai-chat-section">
-            {/* ✅ Fix 3: Show loading state clearly, clears old response */}
+           
             {loading && (
               <div className="ai-response loading">
                 <Sparkles size={14} className="ai-icon" />
