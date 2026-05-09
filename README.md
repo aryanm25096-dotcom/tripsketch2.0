@@ -1,159 +1,98 @@
-# 🗺️ TripSketch – First Milestone (Frontend‑Only)
+# 🗺️ TripSketch 2.0 – AI-Powered Travel Discovery
 
-TripSketch is a **trip‑planning web app** that helps you and your friends find **offbeat, budget‑friendly spots** that match your vibe — instead of the same crowded, over‑priced tourist traps.  
-
-Think of it like a **digital travel sketchbook**: instead of scrolling through boring lists, you flip through hand‑picked, local‑vibe places for your next trip.  
-
-This is **Milestone 1** of the project, where we build a **purely frontend app** with mock data and interactive filtering.
+TripSketch is a **next-generation trip-planning web app** that uses Artificial Intelligence to help travelers find **authentic, offbeat spots** that match their vibe. Instead of generic "Top 10" lists, TripSketch acts as your **digital AI travel sketchbook**, generating personalized journeys in real-time.
 
 ---
 
-## 🙋‍♂️ Problem We’re Solving
+## 🚀 Live Features (Milestone 2 - AI Integration)
 
-When planning trips, everyone ends up seeing the same “Top 10 hill stations / cafes / routes” articles. These are usually:
-- Too crowded.
-- Over‑priced.
-- Not really matching your vibe.
+This project has evolved beyond simple mockups into a fully functional AI travel engine:
 
-TripSketch solves this by:
-- Suggesting **less‑crowded, budget‑friendly spots** (mock data).
-- Presenting places in a **visual, sketchbook‑style layout**.
-- Letting users filter by **vibe (chill, adventure, food, etc.)** and **budget**.
-
----
-
-## 🎯 Project Vision (Milestone 1)
-
-In this first milestone, we focus on:
-
-- Building a **React‑based frontend** with **no backend**.
-- Creating a **UI that feels like a travel sketchbook**.
-- Implementing:
-  - Search by destination and trip type.
-  - Filters by vibe, budget, and crowd level.
-  - Sort options (“Most Local”, “Cheapest”, “Best for Friends”).
-- Mocking **all data in the frontend** (no API calls).
-- Preparing the structure so the project feels complete and demo‑ready as a college project.
+- **✨ AI Spot Discovery**: Uses **Groq LLM (Llama 3.1)** to generate 6 authentic, non-touristy travel spots for any destination in seconds.
+- **🖼️ Real-Time Visuals**: Automatically fetches live photos of generated spots using the **Wikipedia API** for a rich visual experience.
+- **📅 AI Trip Itinerary**: Generates a complete day-by-day travel plan with a single click, including offbeat stays and local food suggestions.
+- **🌡️ Live Weather & Vibe**: Connects to weather logic to provide real-time conditions and destination atmosphere.
+- **💬 Ask AI Interactive Cards**: Chat directly with each spot's card to ask specific questions like "Is this good for solo travelers?" or "What's the best time to visit?".
+- **🏔️ Immersive UI**: High-performance scroll-based background animation and a premium glassmorphic dashboard.
 
 ---
 
-## 🛠️ Tech Stack (Frontend‑Only)
+## 🛠️ Tech Stack
 
-### Core Tech
-- **Framework:** React
-- **Language:** JavaScript (ES6+)
-- **Styling:** CSS (or Tailwind CSS, if you prefer)
-- **State management:** React hooks (`useState`, `useEffect`)
-- **Routing (optional):** React Router for `/`, `/results` (strictly frontend)
+- **Frontend**: React 19 (Vite)
+- **AI Engine**: Groq Cloud API (Llama 3.1 8B)
+- **Data APIs**: Wikipedia API (Images), MediaWiki API (Search)
+- **Markdown**: React-Markdown for beautiful itinerary rendering
+- **Styling**: Vanilla CSS (Custom Design System)
+- **Icons**: Lucide-React
 
-### Data (Milestone 1)
-- **Mock data only:**  
-  - A JavaScript array storing “offbeat spots” directly in the code.
-  - Example fields: `name`, `location`, `vibe`, `budget`, `description`, `crowdLevel`.
-- **Local persistence (optional):**  
-  - `localStorage` to remember liked places across page reloads (UI‑only, no backend involved).
+---
+
+## 📁 Folder Structure
+
+```text
+tripsketch2.0/
+├── public/               # Static assets
+│   └── frames/           # Image frames
+├── scripts/              # Utility scripts
+│   └── run-groq-tests.mjs# Groq API test script
+├── src/                  # Main source code
+│   ├── components/       # React components
+│   │   ├── Dashboard.jsx # Main dashboard view
+│   │   └── TripCard.jsx  # Individual trip spot cards
+│   ├── lib/              # Utility and API functions
+│   │   ├── askPlace.js   # Interactive AI questions
+│   │   ├── groq.js       # Groq LLM integration
+│   │   ├── index.js      # Library exports
+│   │   ├── itinerary.js  # Itinerary generation logic
+│   │   ├── search.js     # Search functionality
+│   │   ├── spots.js      # AI spot generation
+│   │   ├── weather.js    # Weather API logic
+│   │   └── wikipedia.js  # Wikipedia Image fetching
+│   ├── App.css           # App specific styles
+│   ├── App.jsx           # Main App component
+│   ├── index.css         # Global styles & design system
+│   └── main.jsx          # React entry point
+├── index.html            # Vite entry point
+├── package.json          # Project dependencies
+└── vite.config.js        # Vite configuration
+```
 
 ---
 
 ## 🧑‍🤝‍🧑 Team Members
 
-- Aryan Mudgal  
-- Kanika Prajapati  
-- Ayesha Khan
+- **Aryan Mudgal**  
+- **Kanika Prajapati**  
+- **Ayesha Khan**
 
 ---
 
-## 🧩 Milestone 1 Features
+## 🚀 How to Run Locally
 
-In this version, the app includes:
-
-### 🔍 SearchForm
-- Where to go (city / region / hill station).
-- Type of trip (chill, adventure, local‑food, solo, friends, couple).
-- Budget range selector (low, medium, high).
-
-### 🖼️ ResultsGrid
-- Grid of cards showing “offbeat spots”.
-- Each card contains:
-  - Name and location.
-  - Vibe tag (e.g., “Chill”, “Adventure”, “Local Food”).
-  - Budget tag (e.g., “Under ₹1000”).
-  - Short description.
-  - “Like” heart icon (stored in React state or `localStorage`).
-
-### 🎯 FilterBar
-- Filter by vibe (chill, adventure, local, etc.).
-- Filter by budget (low, medium, high).
-- Filter by “Crowd Level” (low, medium, high).
-- Sort by:
-  - “Most Local”.
-  - “Cheapest”.
-  - “Best for Friends”.
-
-### 🎨 Visual Style
-- **Sketchbook‑style layout:**
-  - Soft background colors.
-  - Minimal borders with a slightly hand‑drawn feel.
-  - Illustration‑style or SVG icons.
-  - Card‑based UI that feels like flipping pages.
-
----
-
-## 📁 Project Structure (Suggested – React)
-
-```text
-trip-sketch/
-├── public/
-│   └── index.html
-├── src/
-│   ├── components/
-│   │   ├── SearchForm.jsx
-│   │   ├── FilterBar.jsx
-│   │   ├── TripCard.jsx
-│   │   └── ResultsGrid.jsx
-│   ├── data/
-│   │   └── mockSpots.js    // Mock array of offbeat spots
-│   ├── App.jsx             // Main component
-│   └── index.js
-└── README.md
-```
-
----
-
-## 🚀 How to Run (Milestone 1)
-
-1. Open your project folder.
-2. Install dependencies:
+1. **Clone the repository**:
+   ```bash
+   git clone https://github.com/aryanm25096-dotcom/tripsketch2.0.git
+   ```
+2. **Install dependencies**:
    ```bash
    npm install
    ```
-3. Start the dev server:
-   ```bash
-   npm start
+3. **Set up Environment Variables**:
+   Create a `.env` file in the root and add your Groq API Key:
+   ```env
+   VITE_GROQ_API_KEY=your_key_here
    ```
-4. Open `http://localhost:3000` in your browser.
-
-**All data lives in the frontend; there is no backend or API in this version.**
-
----
-
-## 📝 Future Ideas (Conceptual)
-
-Although this is a frontend‑only project, conceptually it could be extended in the future (not for this college milestone):
-- Adding a backend and user accounts to save favorites.
-- Connecting to travel/location APIs for real‑time data.
-- Improving filters and recommendation logic.
+4. **Start Development Server**:
+   ```bash
+   npm run dev
+   ```
+5. Open `http://localhost:5173` in your browser.
 
 ---
 
 ## 🙌 Acknowledgements
 
-Thanks to our friends and classmates for testing early versions and giving feedback on:
-- Usability of filters and sorting.
-- Visual style and “sketchbook” feel.
-- Clarity of the vibe‑based recommendations.
+Powered by **Groq Cloud** for lightning-fast AI inference and **Wikipedia** for crowdsourced travel data.
 
----
-
-Made with ❤️ by the TripSketch team:  
-**Aryan Mudgal, Kanika Prajapati, Ayesha Khan**
+Made with ❤️ by the TripSketch team.
