@@ -96,17 +96,20 @@ export const cleanJson = (str) => {
     // 1. Remove markdown code blocks
     let cleaned = str.replace(/```json|```/g, '').trim();
 
-    // 2. Find the first occurrence of { or [ and the last occurrence of } or ]
-    const startIdx = cleaned.search(/[[]{]/);
-    if (startIdx === -1) return cleaned;
+  // 2. Find the first occurrence of '{' or '[' and the matching last '}' or ']' so
+  //    we can strip any conversational preamble before the JSON.
+  //    Note: the previous regex was incorrect and didn't match '{'.
+  const startIdx = cleaned.search(/[\[{]/);
+  if (startIdx === -1) return cleaned;
 
-    const char = cleaned[startIdx];
-    const closingChar = char === '[' ? ']' : '}';
-    const endIdx = cleaned.lastIndexOf(closingChar);
+  const char = cleaned[startIdx];
+  const closingChar = char === '[' ? ']' : '}';
+  const endIdx = cleaned.lastIndexOf(closingChar);
 
-    if (endIdx === -1) return cleaned;
+  if (endIdx === -1) return cleaned;
 
-    cleaned = cleaned.substring(startIdx, endIdx + 1);
+  // slice out only the JSON-looking substring
+  cleaned = cleaned.substring(startIdx, endIdx + 1);
 
     // 3. Remove trailing commas in objects and arrays
     cleaned = cleaned.replace(/,\s*([\]}])/g, '$1');
@@ -124,9 +127,46 @@ export const cleanJson = (str) => {
 
     if (safelyParsed(cleaned)) return cleaned;
 
-    // Try a more aggressive fix for unescaped newlines
-    let aggressive = cleaned.replace(/\n/g, '\\n');
-    if (safelyParsed(aggressive)) return aggressive;
+    // Try a more aggressive fix for unescaped newlines inside JSON string values.
+    // We'll walk the string and only escape raw newlines that occur inside double-quoted strings
+    // and are not already escaped. This avoids mangling structural newlines and preserves
+    // existing escape sequences.
+    const escapeNewlinesInStrings = (s) => {
+      let out = '';
+      let inString = false;
+      let escaped = false;
+      for (let i = 0; i < s.length; i++) {
+        const ch = s[i];
+        if (inString) {
+          if (escaped) {
+            out += ch;
+            escaped = false;
+          } else if (ch === '\\') {
+            out += ch;
+            escaped = true;
+          } else if (ch === '"') {
+            inString = false;
+            out += ch;
+          } else if (ch === '\n' || ch === '\r') {
+            // replace literal newline characters inside strings with the escape sequence
+            out += '\\n';
+          } else {
+            out += ch;
+          }
+        } else {
+          if (ch === '"') {
+            inString = true;
+            out += ch;
+          } else {
+            out += ch;
+          }
+        }
+      }
+      return out;
+    };
+
+    const escaped = escapeNewlinesInStrings(cleaned);
+    if (safelyParsed(escaped)) return escaped;
 
     return cleaned;
   } catch (e) {

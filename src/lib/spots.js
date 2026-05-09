@@ -24,7 +24,7 @@ Follow this exact array structure:
     "searchTerms": ["Spot Name City"]
   }
 ]`,
-        },
+        }, 
         {
           role: 'user',
           content: `Destination: ${destination}. Vibe: ${vibe}. Crowd tolerance: ${crowd}.
@@ -71,7 +71,8 @@ Example — Om Beach in Gokarna: wikiTitle: "Om Beach", searchTerms: ["Om Beach 
     );
 
     return spotsWithImages;
-  } catch (error) {
+  } 
+  catch (error) {
     console.error('[spots] Error generating spots:', error);
     return [];
   }

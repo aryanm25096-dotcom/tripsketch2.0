@@ -8,6 +8,7 @@ export const getWikipediaImage = async (wikiTitle, fallbackTerms = []) => {
       const searchRes = await fetch(
         `https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(query)}&format=json&origin=*&srlimit=3`
       );
+
       const searchData = await searchRes.json();
 
       if (searchData.query?.search?.length > 0) {
